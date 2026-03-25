@@ -1,95 +1,87 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Fuel Check Thailand | เช็คปั๊มน้ำมันทั่วไทย</title>
-<p>Updated version</p></head>
+  <title>Fuel Check Thailand</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
 <body class="bg-gray-100">
 
 <div class="max-w-4xl mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-2">Fuel Check Thailand | เช็คปั๊มน้ำมันทั่วไทย</h1>
-  <p class="text-gray-600 mb-6">Community-powered fuel update platform</p>
+  <h1 class="text-3xl font-bold mb-2">
+    Fuel Check Thailand | เช็คปั๊มน้ำมันทั่วไทย
+  </h1>
 
-  <input id="search" placeholder="Search station or province..." 
+  <p>Updated version</p>
+
+  <p class="text-gray-600 mb-6">
+    Community-powered fuel update platform
+  </p>
+
+  <input id="search" placeholder="Search station..."
     class="w-full p-3 rounded-xl border mb-6"/>
 
   <div id="stations" class="grid md:grid-cols-2 gap-4"></div>
 </div>
 
 <script>
-const stations = [
-  {name:"PTT Station - Bangkok", location:"Bangkok", fuel95:"Available", diesel:"Available"},
-  {name:"Shell Station - Phuket Town", location:"Phuket", fuel95:"Limited", diesel:"Available"},
-  {name:"Bangchak Station - Chiang Mai", location:"Chiang Mai", fuel95:"Out of Stock", diesel:"Limited"},
-  {name:"PT Station - Khon Kaen", location:"Khon Kaen", fuel95:"Available", diesel:"Available"},
-  {name:"Caltex Station - Chonburi", location:"Chonburi", fuel95:"Limited", diesel:"Available"}
-];
+let allData = [];
 
-function render(list){
-  const container = document.getElementById("stations");
-  container.innerHTML = "";
-  list.forEach(s=>{
-    container.innerHTML += `
-      <div class="bg-white p-4 rounded-2xl shadow">
-        <h2 class="font-semibold text-lg">${s.name}</h2>
-        <p class="text-sm text-gray-500">${s.location}</p>
-        <div class="mt-3 text-sm">
-          <p>95: ${s.fuel95}</p>
-          <p>Diesel: ${s.diesel}</p>
-        </div>
-      </div>
-    `;
-  });
-}
-
-render(stations);
-
-document.getElementById("search").addEventListener("input", e=>{
-  const value = e.target.value.toLowerCase();
-  render(stations.filter(s=>s.name.toLowerCase().includes(value) || s.location.toLowerCase().includes(value)));
-});
-</script>
-<script>
 async function loadData() {
   try {
     const res = await fetch("https://opensheet.elk.sh/12oBtByuZFjV-Mt--mr0IQLBi9aOLIp6vNj8GuE29rFg/Sheet1");
     const data = await res.json();
 
-    const container = document.getElementById("stations");
-    container.innerHTML = "";
-
-    data.forEach(s => {
-      let color = "bg-gray-200";
-
-if (s["Fuel status"] === "Available") color = "bg-green-200";
-if (s["Fuel status"] === "Queue") color = "bg-yellow-200";
-if (s["Fuel status"] === "Out") color = "bg-red-200";  
-      
-      const div = document.createElement("div");
-
-      div.className = `p-4 rounded-2xl shadow ${color}`;
-
-      div.innerHTML = `
-  <h3 class="text-lg font-semibold">${s["Station name / Location"] || "N/A"}</h3>
-  <p>${s["Fuel type"] || "-"} - <b>${s["Fuel status"] || "-"}</b></p>
-  <small class="text-gray-600">Updated: ${s["Timestamp"] || "-"}</small>
-`;
-      `;
-
-      container.appendChild(div);
-    });
+    allData = data;
+    render(data);
 
   } catch (err) {
     console.error(err);
   }
 }
 
+function render(data) {
+  const container = document.getElementById("stations");
+  container.innerHTML = "";
+
+  data.forEach(s => {
+    let color = "bg-gray-200";
+
+    if (s["Fuel status"] === "Available") color = "bg-green-200";
+    if (s["Fuel status"] === "Queue") color = "bg-yellow-200";
+    if (s["Fuel status"] === "Out") color = "bg-red-200";
+
+    const div = document.createElement("div");
+    div.className = `p-4 rounded-2xl shadow ${color}`;
+
+    div.innerHTML = `
+      <h3 class="text-lg font-semibold">${s["Station name / Location"] || "N/A"}</h3>
+      <p>${s["Fuel type"] || "-"} - <b>${s["Fuel status"] || "-"}</b></p>
+      <small class="text-gray-600">Updated: ${s["Timestamp"] || "-"}</small>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+// search function
+document.getElementById("search").addEventListener("input", e => {
+  const value = e.target.value.toLowerCase();
+
+  const filtered = allData.filter(s =>
+    (s["Station name / Location"] || "").toLowerCase().includes(value)
+  );
+
+  render(filtered);
+});
+
 // load first time
 loadData();
 
-// auto refresh every 30 sec
+// auto refresh
 setInterval(loadData, 30000);
 </script>
+
 </body>
 </html>
