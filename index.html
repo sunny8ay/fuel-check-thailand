@@ -52,6 +52,45 @@ document.getElementById("search").addEventListener("input", e=>{
   render(stations.filter(s=>s.name.toLowerCase().includes(value) || s.location.toLowerCase().includes(value)));
 });
 </script>
+<script>
+async function loadData() {
+  try {
+    const res = await fetch("https://opensheet.elk.sh/12oBtByuZFjV-Mt--mr0IQLBi9aOLIp6vNj8GuE29rFg/Sheet1");
+    const data = await res.json();
 
+    const container = document.getElementById("stations");
+    container.innerHTML = "";
+
+    data.forEach(s => {
+      let color = "bg-gray-200";
+
+      if (s.status === "Available") color = "bg-green-200";
+      if (s.status === "Queue") color = "bg-yellow-200";
+      if (s.status === "Out") color = "bg-red-200";
+
+      const div = document.createElement("div");
+
+      div.className = `p-4 rounded-2xl shadow ${color}`;
+
+      div.innerHTML = `
+        <h3 class="text-lg font-semibold">${s.station}</h3>
+        <p>${s.fuel} - <b>${s.status}</b></p>
+        <small class="text-gray-600">Updated: ${s.updated}</small>
+      `;
+
+      container.appendChild(div);
+    });
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// load first time
+loadData();
+
+// auto refresh every 30 sec
+setInterval(loadData, 30000);
+</script>
 </body>
 </html>
