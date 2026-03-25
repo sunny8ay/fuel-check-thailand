@@ -64,18 +64,19 @@ async function loadData() {
     data.forEach(s => {
       let color = "bg-gray-200";
 
-      if (s["Fuel status"] === "Available");
-      if (s["Fuel status"] === "Queue");
-      if (s["Fuel status"] === "Out");
+if (s["Fuel status"] === "Available") color = "bg-green-200";
+if (s["Fuel status"] === "Queue") color = "bg-yellow-200";
+if (s["Fuel status"] === "Out") color = "bg-red-200";
 
       const div = document.createElement("div");
 
       div.className = `p-4 rounded-2xl shadow ${color}`;
 
       div.innerHTML = `
-        <h3>${s["Station name / Location"]}</h3>
-<p>${s["Fuel type"]} - <b>${s["Fuel status"]}</b></p>
-<small>Updated: ${s["Timestamp"]}</small>
+  <h3 class="text-lg font-semibold">${s["Station name / Location"] || "N/A"}</h3>
+  <p>${s["Fuel type"] || "-"} - <b>${s["Fuel status"] || "-"}</b></p>
+  <small class="text-gray-600">Updated: ${s["Timestamp"] || "-"}</small>
+`;
       `;
 
       container.appendChild(div);
