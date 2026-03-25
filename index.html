@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fuel Check Thailand | เช็คปั๊มน้ำมันทั่วไทย</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<div class="max-w-4xl mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-2">Fuel Check Thailand | เช็คปั๊มน้ำมันทั่วไทย</h1>
+  <p class="text-gray-600 mb-6">Community-powered fuel update platform</p>
+
+  <input id="search" placeholder="Search station or province..." 
+    class="w-full p-3 rounded-xl border mb-6"/>
+
+  <div id="stations" class="grid md:grid-cols-2 gap-4"></div>
+</div>
+
+<script>
+const stations = [
+  {name:"PTT Station - Bangkok", location:"Bangkok", fuel95:"Available", diesel:"Available"},
+  {name:"Shell Station - Phuket Town", location:"Phuket", fuel95:"Limited", diesel:"Available"},
+  {name:"Bangchak Station - Chiang Mai", location:"Chiang Mai", fuel95:"Out of Stock", diesel:"Limited"},
+  {name:"PT Station - Khon Kaen", location:"Khon Kaen", fuel95:"Available", diesel:"Available"},
+  {name:"Caltex Station - Chonburi", location:"Chonburi", fuel95:"Limited", diesel:"Available"}
+];
+
+function render(list){
+  const container = document.getElementById("stations");
+  container.innerHTML = "";
+  list.forEach(s=>{
+    container.innerHTML += `
+      <div class="bg-white p-4 rounded-2xl shadow">
+        <h2 class="font-semibold text-lg">${s.name}</h2>
+        <p class="text-sm text-gray-500">${s.location}</p>
+        <div class="mt-3 text-sm">
+          <p>95: ${s.fuel95}</p>
+          <p>Diesel: ${s.diesel}</p>
+        </div>
+      </div>
+    `;
+  });
+}
+
+render(stations);
+
+document.getElementById("search").addEventListener("input", e=>{
+  const value = e.target.value.toLowerCase();
+  render(stations.filter(s=>s.name.toLowerCase().includes(value) || s.location.toLowerCase().includes(value)));
+});
+</script>
+
+</body>
+</html>
